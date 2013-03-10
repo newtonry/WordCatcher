@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <title>Word Catcher</title>
+  <link rel="stylesheet" href="includes/stylesheet.css" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Ubuntu:bold" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Vollkorn" rel="stylesheet" type="text/css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  
+  <!--Includes for the chart plot-->
+  <script language="javascript" type="text/javascript" src="includes/jqplot/jquery.jqplot.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="includes/jqplot/jquery.jqplot.css" />
+  <script type="text/javascript" src="includes/jqplot/plugins/jqplot.barRenderer.min.js"></script>
+  <script type="text/javascript" src="includes/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+  <script type="text/javascript" src="includes/jqplot/plugins/jqplot.pointLabels.min.js"></script>
+
+  <script type="text/javascript" src="includes/browserdetect.js"></script>
+
+
+
+ </head>
+ <body>
+	  <div id = 'pageWrapper'>
+	  <h1 id='title'>WordCatcher</h1>
+	  <div id = 'wordEntry'>
+	  	<p id = 'reset' style = 'float: right; font-size: 12px; color: #000;'><a href = ''>reset</a></p>
+		<p><h3>Please enter the words you want to catch:</h3>
+		  <input id = 'newWord'>
+		  <!--<input type ='submit' onClick='getWordToAdd()' value = '+Add'>-->
+		  <!--<img onClick='getWordToAdd()' src ='images/add.svg' style ='display: inline;'>-->
+		</p>
+		<p><span class='otherFont' id='currentWordsList'></span></p>
+		
+		<p>Common words<span style = 'font-size: 12px;'> (click to add):</span> <span class = 'otherFont'><span onClick ="addToList('um')">um</span>, <span onClick ="addToList('yeah')">yeah</span>, <span onClick ="addToList('uh')">uh</span>, <span onClick ="addToList('like')">like</span></span></p>
+			  
+	  <div id="info">
+	  </div>
+	  
+		<p style ='font-size: 14px;'>Click the microphone icon to begin and end.</p>
+		<button id="start_button" onclick="startButton(event)">
+		<img id="start_img" src="images/mic.gif" alt="Start"></button>
+		
+	  </div>
+	  <div id = 'allResultsInfo'>
+ 		  <h3 id = 'transcriptTitle' style = 'display: none;'>Transcript:</h3>
+ 		  <p id = 'transcript'></p>
+		  <div id="chartDiv"></div>
+    	  <div id = 'results'></div>
+	
+		  <p id = 'interim_span' style='display: none;'>Transcript</p>
+	  </div><!--end of allResultsInfo-->
+ 
+ </div><!--end of pageWrapper-->
+ </body>
+</html>
+
+
+<script>
+
+if (BrowserDetect.browser != "Chrome" && BrowserDetect.version < 25) {
+	alert("Sorry, WordCatcher is only available in Google Chrome version 25 or later ");
+}
+
+
+var wordsToCatch = new Array();
+var wordsCount = new Array();
+
+
+function plotGraph(words, values) {
+
+
+	//$.jqplot('chartDiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
+	
+	
+	//  var s1 = [2, 6, 7, 10];
+	//  var s2 = [7, 5, 3, 4];
+	//  var s3 = [14, 9, 3, 8];
+		values.push(0);
+		words.push('');
+		
+		plot3 = $.jqplot('chartDiv', [values], {
+		// Tell the plot to stack the bars.
+		stackSeries: true,
+		captureRightClick: true,
+		seriesDefaults:{
+		  renderer:$.jqplot.BarRenderer,
+		  rendererOptions: {
+			  // Put a 30 pixel margin between bars.
+			  barMargin: 30,
+			  // Highlight bars when mouse button pressed.
+			  // Disables default highlighting on mouse over.
+			  highlightMouseDown: true   
+		  },
+		  pointLabels: {show: true}
+		},
+		axes: {
+				xaxis: {
+					renderer: $.jqplot.CategoryAxisRenderer,
+					ticks: words
+				},
+			yaxis: {
+			// Don't pad out the bottom of the data range.  By default,
+			// axes scaled as if data extended 10% above and below the
+			// actual range to prevent data points right on grid boundaries.
+			// Don't want to do that here.
+			padMin: 0
+		  }
+		},
+		legend: {
+		  show: false,
+		  location: 'e',
+		  placement: 'outside'
+		}      
+	  });
+	  
+	  words.splice(words.length-1, 1);
+	  values.splice(words.length-1, 1);
+	  
+	  // Bind a listener to the "jqplotDataClick" event.  Here, simply change
+	  // the text of the info3 element to show what series and ponit were
+	  // clicked along with the data for that point.
+	/*  $('#chartDiv').bind('jqplotDataClick', 
+		function (ev, seriesIndex, pointIndex, data) {
+		  alert('hi');
+		  $('#info3').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+		} 
+		
+	  ); 
+	  */
+}  
+  
+
+
+
+//catches the textbox if enter is hit
+$("#newWord").keyup(function(event){
+    if(event.keyCode == 13){
+        getWordToAdd();
+    }
+});
+
+
+function getWordToAdd() {
+	wordToAdd = document.getElementById('newWord').value;
+	addToList(wordToAdd);
+}
+
+function addToList(wordToAdd) {
+
+	if (wordsToCatch.indexOf(wordToAdd) ==  -1 && wordToAdd != '') {	
+		wordsToCatch.push(wordToAdd);
+		
+		outputString = '';
+		
+		for (i=0; i < wordsToCatch.length; i++) {
+			if (i != 0) {
+				outputString += ', ';
+			}
+			
+			outputString += wordsToCatch[i];
+		}
+		
+		document.getElementById('currentWordsList').innerHTML = outputString;
+		}
+		
+		document.getElementById('newWord').value = '';
+		
+}
+
+</script>
+
+<script>
+
+var final_transcript = '';
+var recognizing = false;
+var ignore_onend;
+var start_timestamp;
+if (!('webkitSpeechRecognition' in window)) {
+  upgrade();
+} else {
+  start_button.style.display = 'inline-block';
+  var recognition = new webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onstart = function() {
+    recognizing = true;
+    showInfo('info_speak_now');
+    start_img.src = 'images/mic-animate.gif';
+  };
+
+  recognition.onerror = function(event) {
+    if (event.error == 'no-speech') {
+      start_img.src = 'images/mic.gif';
+      showInfo('info_no_speech');
+      ignore_onend = true;
+    }
+    if (event.error == 'audio-capture') {
+      start_img.src = 'images/mic.gif';
+      showInfo('info_no_microphone');
+      ignore_onend = true;
+    }
+    if (event.error == 'not-allowed') {
+      if (event.timeStamp - start_timestamp < 100) {
+        showInfo('info_blocked');
+      } else {
+        showInfo('info_denied');
+      }
+      ignore_onend = true;
+    }
+  };
+
+  recognition.onend = function() {
+  	
+	
+	for (i=0; i < wordsToCatch.length; i++) {
+		
+		outputString = '<p>You used <span style = "text-decoration:underline">' + wordsToCatch[i] + '</span>: ' + countWord(wordsToCatch[i]) + ' times</p>';
+		
+		wordsCount.push(countWord(wordsToCatch[i]));
+		
+		$('#results').append(outputString);	
+	
+	}
+	
+
+	plotGraph(wordsToCatch, wordsCount);
+
+		
+    recognizing = false;
+    if (ignore_onend) {
+      return;
+    }
+    start_img.src = 'images/mic.gif';
+    if (!final_transcript) {
+      showInfo('info_start');
+      return;
+    }
+    showInfo('');
+    if (window.getSelection) {
+      window.getSelection().removeAllRanges();
+      var range = document.createRange();
+      range.selectNode(document.getElementById('transcript'));
+      window.getSelection().addRange(range);
+    }
+  };
+
+  recognition.onresult = function(event) {
+  
+    var interim_transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        final_transcript += event.results[i][0].transcript;
+
+      } else {
+        interim_transcript += event.results[i][0].transcript;
+      }
+    }
+    final_transcript = capitalize(final_transcript);
+    transcript.innerHTML = linebreak(final_transcript);
+    transcriptTitle.style.display = 'block'; 
+    interim_span.innerHTML = linebreak(interim_transcript);
+    if (final_transcript || interim_transcript) {
+      showButtons('inline-block');
+    }
+  };
+}
+
+function upgrade() {
+  start_button.style.visibility = 'hidden';
+  showInfo('info_upgrade');
+}
+
+var two_line = /\n\n/g;
+var one_line = /\n/g;
+function linebreak(s) {
+  return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
+}
+
+var first_char = /\S/;
+function capitalize(s) {
+  return s.replace(first_char, function(m) { return m.toUpperCase(); });
+}
+
+
+function startButton(event) {
+  if (recognizing) {
+    recognition.stop();
+    return;
+  }
+  final_transcript = '';
+  recognition.lang = ['en-US', 'United States'];
+  recognition.start();
+  ignore_onend = false;
+  transcript.innerHTML = '';
+  interim_span.innerHTML = '';
+  start_img.src = 'images/mic-slash.gif';
+  showInfo('info_allow');
+  showButtons('none');
+  start_timestamp = event.timeStamp;
+}
+
+function showInfo(s) {
+  if (s) {
+    for (var child = info.firstChild; child; child = child.nextSibling) {
+      if (child.style) {
+        child.style.display = child.id == s ? 'inline' : 'none';
+      }
+    }
+    info.style.visibility = 'visible';
+  } else {
+    info.style.visibility = 'hidden';
+  }
+}
+
+var current_style;
+function showButtons(style) {
+  if (style == current_style) {
+    return;
+  }
+  current_style = style;
+}
+
+function countWord(word) {
+ 	  	
+
+ 	final_transcript = ' ' + final_transcript;
+  	final_transcript = final_transcript.toLowerCase();
+
+ 	console.log(final_transcript);
+  	wordCount = final_transcript.split(word).length - 1;
+	
+	return wordCount;
+ 
+ }
+</script>
