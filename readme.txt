@@ -1,3 +1,3 @@
 This was a startup weekend project during March 2013.
 It uses the Web Speech API (http://updates.html5rocks.com/2013/01/Voice-Driven-Web-Apps-Introduction-to-the-Web-Speech-API), which only works on Chrome 25+ at the moment (03/10/13).
-The intention of this product is to allow people to prepare their speeches and become better orators by calculating the number of 'ums' and 'uhs' (or any word) during their spech; allowing them to pinpoint and work on their oratory flaws.
+The intention of this product is to allow people to prepare their speeches and become better orators by calculating the number of 'ums' and 'uhs' (or any word) during their speech; allowing them to pinpoint and work on their oratory flaws.

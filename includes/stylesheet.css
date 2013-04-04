@@ -34,6 +34,11 @@ h1 {
     font-size: 50px;
 }
 
+h2 {
+    font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+    font-size: 23px;
+}
+
 h3 {
     font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
     font-size: 20px;
@@ -60,6 +65,23 @@ a:hover {color: #ff0000; text-decoration: none; }
 	text-align: center;
 }
 
+#title a {
+	text-decoration: none;
+}
+#title a:hover {color: #000000; text-decoration: none; }
+
+#topRightItem {
+	margin-left: 9%;
+
+}
+
+#topRightItem a {
+    font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+    font-size: 15px;
+	text-decoration: none;
+}
+
+
 #wordEntry {
 	margin:0 auto;
 	width: 80%;
@@ -75,6 +97,30 @@ a:hover {color: #ff0000; text-decoration: none; }
 	-moz-border-radius: 8px;
 	border-radius: 8px;
 
+}
+
+#aboutHolder {
+	margin:0 auto;
+	width: 80%;
+    
+    text-align: center;
+    font-size: 40px;
+    
+    padding: 20px;
+    background-color: rgba(255,255,255,0.5);
+    
+    -webkit-box-shadow: 2px 2px 10px 3px rgba(0, 0, 0, .5);
+	box-shadow: 2px 2px 10px 3px rgba(0, 0, 0, .25);
+
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+
+}
+
+.aboutText {
+
+	font-size: 18px;
+	line-height: 1.2;
 }
 
 #allResultsInfo {

@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta charset="UTF-8">
-  <title>Word Catcher</title>
+  <title>WordCatcher</title>
   <link rel="stylesheet" href="includes/stylesheet.css" type="text/css">
   <link href="http://fonts.googleapis.com/css?family=Ubuntu:bold" rel="stylesheet" type="text/css">
   <link href="http://fonts.googleapis.com/css?family=Vollkorn" rel="stylesheet" type="text/css">
@@ -22,7 +22,9 @@
  </head>
  <body>
 	  <div id = 'pageWrapper'>
-	  <h1 id='title'>WordCatcher</h1>
+ 	  <p id = 'topRightItem'><a href = 'about.html'>About</a></p>
+
+	  <h1 id='title'><a href='index.html'>WordCatcher</a></h1>
 	  <div id = 'wordEntry'>
 	  	<p id = 'reset' style = 'float: right; font-size: 12px; color: #000;'><a href = ''>reset</a></p>
 		<p><h3>Please enter the words you want to catch:</h3>
@@ -56,80 +58,36 @@
 </html>
 
 
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-39200546-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
 <script>
 
 if (BrowserDetect.browser != "Chrome" && BrowserDetect.version < 25) {
 	alert("Sorry, WordCatcher is only available in Google Chrome version 25 or later ");
 }
 
-
+//for keeping track of user input words
 var wordsToCatch = new Array();
 var wordsCount = new Array();
 
-
-function plotGraph(words, values) {
-
-
-	//$.jqplot('chartDiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
-	
-	
-	//  var s1 = [2, 6, 7, 10];
-	//  var s2 = [7, 5, 3, 4];
-	//  var s3 = [14, 9, 3, 8];
-		values.push(0);
-		words.push('');
-		
-		plot3 = $.jqplot('chartDiv', [values], {
-		// Tell the plot to stack the bars.
-		stackSeries: true,
-		captureRightClick: true,
-		seriesDefaults:{
-		  renderer:$.jqplot.BarRenderer,
-		  rendererOptions: {
-			  // Put a 30 pixel margin between bars.
-			  barMargin: 30,
-			  // Highlight bars when mouse button pressed.
-			  // Disables default highlighting on mouse over.
-			  highlightMouseDown: true   
-		  },
-		  pointLabels: {show: true}
-		},
-		axes: {
-				xaxis: {
-					renderer: $.jqplot.CategoryAxisRenderer,
-					ticks: words
-				},
-			yaxis: {
-			// Don't pad out the bottom of the data range.  By default,
-			// axes scaled as if data extended 10% above and below the
-			// actual range to prevent data points right on grid boundaries.
-			// Don't want to do that here.
-			padMin: 0
-		  }
-		},
-		legend: {
-		  show: false,
-		  location: 'e',
-		  placement: 'outside'
-		}      
-	  });
-	  
-	  words.splice(words.length-1, 1);
-	  values.splice(words.length-1, 1);
-	  
-	  // Bind a listener to the "jqplotDataClick" event.  Here, simply change
-	  // the text of the info3 element to show what series and ponit were
-	  // clicked along with the data for that point.
-	/*  $('#chartDiv').bind('jqplotDataClick', 
-		function (ev, seriesIndex, pointIndex, data) {
-		  alert('hi');
-		  $('#info3').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
-		} 
-		
-	  ); 
-	  */
-}  
-  
+//web speech recognition variables
+var final_transcript = '';
+var recognizing = false;
+var ignore_onend;
+var start_timestamp;
 
 
 
@@ -168,14 +126,8 @@ function addToList(wordToAdd) {
 		
 }
 
-</script>
 
-<script>
 
-var final_transcript = '';
-var recognizing = false;
-var ignore_onend;
-var start_timestamp;
 if (!('webkitSpeechRecognition' in window)) {
   upgrade();
 } else {
@@ -322,16 +274,81 @@ function showButtons(style) {
   current_style = style;
 }
 
+
 function countWord(word) {
  	  	
 
  	final_transcript = ' ' + final_transcript;
   	final_transcript = final_transcript.toLowerCase();
 
- 	console.log(final_transcript);
+ 	//console.log(final_transcript);
   	wordCount = final_transcript.split(word).length - 1;
 	
 	return wordCount;
  
  }
+ 
+ 
+function plotGraph(words, values) {
+
+
+		values.push(0);
+		words.push('');
+		
+		plot3 = $.jqplot('chartDiv', [values], {
+		// Tell the plot to stack the bars.
+		stackSeries: true,
+		captureRightClick: true,
+		seriesDefaults:{
+		  renderer:$.jqplot.BarRenderer,
+		  rendererOptions: {
+			  // Put a 30 pixel margin between bars.
+			  barMargin: 30,
+			  // Highlight bars when mouse button pressed.
+			  // Disables default highlighting on mouse over.
+			  highlightMouseDown: true   
+		  },
+		  pointLabels: {show: true}
+		},
+		axes: {
+				xaxis: {
+					renderer: $.jqplot.CategoryAxisRenderer,
+					ticks: words
+				},
+			yaxis: {
+			// Don't pad out the bottom of the data range.  By default,
+			// axes scaled as if data extended 10% above and below the
+			// actual range to prevent data points right on grid boundaries.
+			// Don't want to do that here.
+			padMin: 0
+		  }
+		},
+		legend: {
+		  show: false,
+		  location: 'e',
+		  placement: 'outside'
+		}      
+	  });
+	  
+	  words.splice(words.length-1, 1);
+	  values.splice(words.length-1, 1);
+	  
+	  // Bind a listener to the "jqplotDataClick" event.  Here, simply change
+	  // the text of the info3 element to show what series and ponit were
+	  // clicked along with the data for that point.
+	/*  $('#chartDiv').bind('jqplotDataClick', 
+		function (ev, seriesIndex, pointIndex, data) {
+		  alert('hi');
+		  $('#info3').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+		} 
+		
+	  ); 
+	  */
+} 
+ 
+ 
+ 
+ 
+ 
+ 
 </script>
